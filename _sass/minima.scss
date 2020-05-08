@@ -10,11 +10,12 @@ $base-line-height: 1.5 !default;
 
 $spacing-unit:     30px !default;
 
-$text-color:       #839496 !default;
-$background-color: #002b36 !default;
-$brand-color:      #2aa198 !default;
+// Edited for the Solarized color scheme
+$text-color:       #839496;
+$background-color: #002b36;
+$brand-color:      #2aa198;
 
-$grey-color:       #93a1a1 !default;
+$grey-color:       #93a1a1;
 $grey-color-light: lighten($grey-color, 40%) !default;
 $grey-color-dark:  darken($grey-color, 25%) !default;
 
