@@ -21,7 +21,11 @@ Current certifications I hold:
  * [GSEC][2]  
  * [GIAC Advisory Board Member][3]  
 
-
+**Obligatory disclaimer:** This is a personal blog, and therefore is completely independent of my
+work or employer. All information, opinions and views expressed here are mine alone (except where
+otherwise noted) and do not necessarily reflect those of my employer. Additionally, nothing said
+here should be considered professional advice, and I am not responsible for any damages or offenses
+caused by the use of the information presented here.
 
 [1]: https://www.youracclaim.com/badges/383948df-3819-485e-80b1-ac8991b0400a "GPEN Acclaim Badge"
 [2]: https://www.youracclaim.com/badges/95ef0ae7-bb86-4bd9-9cd1-6d67c2a8040b "GSEC Acclaim Badge"
