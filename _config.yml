@@ -16,7 +16,7 @@
 title: White Rabbits
 author: grab0id
 email: ""
-description: >- # this means to ignore newlines until "baseurl:"
+description: >+ # this means to ignore newlines until "baseurl:"
   Here lie my exploits and adventures into the world of offensive
   security. I'm not here to pretend I know anything; I'm just here 
   to learn and grow...and maybe be a penetration tester one day. glhf!
