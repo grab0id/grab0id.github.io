@@ -24,6 +24,12 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://grab0id.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 permalink: pretty
 
+defaults:
+  - scope:
+      path: "assets/images"
+    values:
+      image: true
+
 # Social info
 twitter_username: djbrooks311
 github_username:  grab0id

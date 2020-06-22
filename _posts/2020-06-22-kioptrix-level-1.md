@@ -6,7 +6,7 @@ categories: blog
 tags:   [hacking, Kioptrix]
 ---
 ### Kioptrix Level One
-Download: [VulnHub][1]
+Download: [VulnHub][1]  
 **NOTE:** Always exercise caution when downloading VMs of this nature (or anything for that matter) 
 from the internet. VulnHub offers some guidance around protecting yourself and your home network, 
 and there are other resources out there to help as well. I have provided the link to VulnHub only 
