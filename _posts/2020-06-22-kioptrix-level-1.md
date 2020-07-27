@@ -5,6 +5,8 @@ date:   2020-06-22
 categories: blog
 tags:   [hacking, Kioptrix]
 ---
+**[Disclaimer!][3]**
+
 ### Kioptrix Level One
 Download: [VulnHub][1]  
 **NOTE:** Always exercise caution when downloading VMs of this nature (or anything for that matter) 
@@ -268,3 +270,4 @@ Great success, and in proper poor configuration fashion Apache is running as roo
 
 [1]: https://www.vulnhub.com/entry/kioptrix-level-1-1,22/
 [2]: https://www.exploit-db.com/exploits/47080
+[3]: /disclaimer/
