@@ -145,8 +145,10 @@ be used to pull files across the network, if netcat isn't installed on the targe
 read the 'passwd' file, couldn't read the shadow file, netcat isn't installed but curl is 
 installed.
 
-From here I want to get a shell on the computer, so I am going to look to `msfvenom` to develop a 
+From here I want to get a shell on the computer, so I am going to use to `msfvenom` to develop a 
 payload that will get me a remote shell.
+
+To be continued...
 
 [1]: /disclaimer/
 [2]: https://www.vulnhub.com/entry/kioptrix-level-11-2,23/
