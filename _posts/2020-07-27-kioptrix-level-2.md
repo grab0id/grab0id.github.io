@@ -250,12 +250,20 @@ Meterpreter  : x86/linux
 
 And now we move on to escalation of privileges...
 
+A quick check of the system showed us that this server is running Linux kernel 2.6.9, CentOS 4.5.
+This is a pretty old version of CentOS and a pretty old Linux kernel, and a quick check of the
+Exploit Database searching for 'linux 2.6.9 centos' gives us a few choices. My choice here was to
+try the 'ip_append_data()' privilege escalation method, which can be found [here][4].
 
-To be continued...
-
+There are a few ways we can do this, so I first checked to see if gcc was installed on our victim
+computer. Once that was confirmed, I chose to create a new file and edit it in vi. I copied and
+pasted the code into vi and then saved the file. One quick compile later, and I have a functional
+exploit:
+![ROOOOOOOT!](/assets/images/kioptrix2-root.png)
 
 
 
 [1]: /disclaimer/
 [2]: https://www.vulnhub.com/entry/kioptrix-level-11-2,23/
 [3]: https://www.exploit-db.com/papers/14340
+[4]: https://www.exploit-db.com/exploits/9542
