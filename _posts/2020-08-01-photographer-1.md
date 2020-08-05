@@ -321,11 +321,12 @@ wonder...
 [Koken exploit][4]  
 [PHP Reverse Shell payload][3]  
 [Python to full shell][5]  
+user.txt  
 pokey pokey  
-    ps aux | grep root  
     [LinEnum.sh - github][6]  
         [PHP7.2 = SUID][7]  
             [GTFObins][8]  
+root.txt
 
 [1]: /disclaimer/
 [2]: https://www.vulnhub.com/entry/photographer-1,519/
