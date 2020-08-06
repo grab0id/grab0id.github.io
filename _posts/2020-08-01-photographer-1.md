@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Photographer 1"
-date:   2020-07-27
+date:   2020-08-05
 categories: blog
 tags:   [hacking, oscp prep]
 ---
@@ -316,17 +316,74 @@ set up for Daisa, let's assume their email is the login; now we just need to fig
 password. Agi did call Daisa their 'babygirl'...and they were the one that made the website...so I
 wonder...  
   
-![BINGO!](/assets/images/photographer-port-8000-login-success.png)
+![BINGO!](/assets/images/photographer-port-8000-login-success.png)  
 
-[Koken exploit][4]  
-[PHP Reverse Shell payload][3]  
-[Python to full shell][5]  
-user.txt  
-pokey pokey  
-    [LinEnum.sh - github][6]  
-        [PHP7.2 = SUID][7]  
-            [GTFObins][8]  
-root.txt
+From here I did a little bit of exploring, found and downloaded the 'shell.php' file that we
+discovered earlier, confirmed that it was the reverse shell we thought it was and then attempted
+to upload my own reverse shell payload. Unfortunately for us, the application controlled the file
+types that were allowed to be uploaded, so we would have to figure out another way to get the site
+to accept our payload.  
+
+After searching a bit more and turning up nothing, I decided to see if anyone had found something I
+was missing so I did a search on the [Exploit-DB][9] for any known exploits. One quick search for
+Koken 0.22.24 later and I found this [Koken exploit][4] that looked like it might give us the push
+we needed. I will let you go check out the exploit to get the full details, but long story short
+it involves intercepting the http request when you use the 'Import content' feature and manually
+editing it before you actually pass it along to the server.
+
+Using this exploit, I was able to upload the [PHP Reverse Shell payload][3] I edited for my machine
+listening with `ncat`. With our payload up there, now all we have to do is navigate to that page
+on the web server to force it to process the PHP and BOOM!:  
+  
+![Sweet, sweet low priv shell](/assets/images/photographer-1-reverse-shell-success.png)
+
+We can't do much with this shell, as we can tell from this line:
+```
+/bin/sh: 0: can't access tty; job control turned off
+```
+So that means wee need to get a more full featured shell. There are a number of ways to do this,
+but since I'm trying to learn Python, I like to use the Python example from [Pentest Monkey][5].
+Now with our more complete shell, we can navigate around and start looking for flags. The VulnHub
+post on this machine said there was a 'user.txt' flag and a 'root.txt' flag. It's pretty safe to
+assume (and easy to confirm) that the 'www-data' user doesn't have rights to the root directory,
+so I checked out the 'home' directory. A quick browse of Daisa's home directory gets us the user
+flag:  
+  
+![user.txt](/assets/images/photographer-user-flag.png)
+
+From here we get to poke around a bit, looking for a route to root. There are countless resources
+out there that help with this area, so I will not attempt to present you with a comprehensive list
+of Linux privilege escalation techniques. Rather, I will just talk a little bit about what I look
+for once I have a low priv shell:
+ * Linux distro and version
+   * Sometimes you get lucky and it's old, just be careful before you start lobbing exploits
+ * Currently running processes, especially those running as root
+   * All running processes: ps aux
+   * All processes, looking only for root: ps aux \| grep root
+ * Special scripts or applications that are in home directories
+ * Bash history  
+  
+This is nowhere near a comprehensive list, but just a jumping off point. There are a number of
+scripts out there to help with post-exploitation enumeration. In this case, I used [LinEnum.sh][6]
+to help me find my path to root. One of the things that this script finds are files that have the
+SUID bit set or the SGID bit set. These files are important since they are always executed as if
+the owning user (SUID) or the owning group (SGID) is executing them, regardless of the current
+user's permissions. For a more detailed explanation about how these files operate, you can check
+out the post on [LinuxHandbook.com][10]. In the case of this machine, one of the SUID files is
+PHP7.2!  
+
+From this point, we [DuckDuckGo!][11] Or we just check out [GTFObins][8]... This is a page that I
+have found to be incredibly useful when looking for assistance on how to use normal files in my
+not-so-normal ways, and today is no different. Here I found a quick example of how I could use a
+PHP file for privilege escalation when it was set with root SUID privileges: [PHP - #SUID][7]
+```bash
+php -r "pcntl_exec('/bin/sh', ['-p']);"
+```
+
+In our case, since PHP was already a SUID file, we only have to execute the final command from
+GTFObins. Once that was done it was game over:  
+  
+![root.txt](/assets/images/photographer-root-flag.png)
 
 [1]: /disclaimer/
 [2]: https://www.vulnhub.com/entry/photographer-1,519/
@@ -334,5 +391,8 @@ root.txt
 [4]: https://www.exploit-db.com/exploits/48706
 [5]: http://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet
 [6]: https://github.com/rebootuser/LinEnum
-[7]: https://gtfobins.github.io/gtfobins/php/
+[7]: https://gtfobins.github.io/gtfobins/php/#suid
 [8]: https://gtfobins.github.io/
+[9]: https://www.exploit-db.com/
+[10]: https://linuxhandbook.com/suid-sgid-sticky-bit/
+[11]: https://duckduckgo.com/
