@@ -15,6 +15,8 @@ from the internet. VulnHub offers some guidance around protecting yourself and y
 and there are other resources out there to help as well. I have provided the link to VulnHub only 
 as a reference, and cannot be held liable for what you download.
 
+UPDATE: Credit where it's due! Big thanks to [@v1n1v131r4][12] for a great machine!
+
 Got to start somewhere, might as well be with ```nmap```:
 ```
 sudo nmap -vv -sV -sC -O 10.0.100.27
@@ -396,3 +398,4 @@ GTFObins. Once that was done it was game over:
 [9]: https://www.exploit-db.com/
 [10]: https://linuxhandbook.com/suid-sgid-sticky-bit/
 [11]: https://duckduckgo.com/
+[12]: https://twitter.com/v1n1v131r4
