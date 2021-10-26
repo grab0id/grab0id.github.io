@@ -25,5 +25,5 @@ Current certifications I hold:
 
 [1]: https://www.youracclaim.com/badges/383948df-3819-485e-80b1-ac8991b0400a "GPEN Acclaim Badge"
 [2]: https://www.youracclaim.com/badges/95ef0ae7-bb86-4bd9-9cd1-6d67c2a8040b "GSEC Acclaim Badge"
-[3]: https://www.youracclaim.com/badges/689153fd-e305-4f6d-a738-d529a7620d47 "Acclaim Badge"
+[3]: https://www.youracclaim.com/badges/689153fd-e305-4f6d-a738-d529a7620d47 "AB Acclaim Badge"
 [4]: /disclaimer/
